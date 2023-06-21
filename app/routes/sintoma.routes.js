@@ -4,7 +4,8 @@ module.exports = app => {
   var router = require("express").Router();
 
   // Devuelve todos los sintomas
-  router.get("/", sintomas.findAll);
+  router.get("/:lang", sintomas.findAll);
 
-  app.use('/api/sintomas', router);
+
+  app.use('/api/sintomas/', router);
 };

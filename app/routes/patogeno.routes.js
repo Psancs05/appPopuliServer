@@ -4,10 +4,10 @@ module.exports = app => {
   var router = require("express").Router();
 
   // Devuelve todos los patogenos
-  router.get("/", patogenos.findAll);
+  router.get("/:lang", patogenos.findAll);
 
   // Devuelve todos los patogenos con el id_sintoma
-  router.get("/:id_sintoma", patogenos.find)
+  router.get("/:id_sintoma/:lang", patogenos.find)
 
   app.use('/api/patogenos', router);
 };

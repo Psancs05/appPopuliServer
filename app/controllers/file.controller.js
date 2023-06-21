@@ -29,7 +29,8 @@ const upload = async (req, res) => {
 };
 
 const getListFiles = (req, res) => {
-  const directoryPath = __basedir + "/resources/informes/";
+  let language = req.params.lang;
+  const directoryPath = __basedir + "/resources/informes/" + language + "/";
 
   fs.readdir(directoryPath, function (err, files) {
     if (err) {
@@ -40,20 +41,31 @@ const getListFiles = (req, res) => {
 
     let fileInfos = [];
 
-    files.forEach((file) => {
-      fileInfos.push({
-        name: file,
-        url: baseUrl + file,
+    try{
+      files.forEach((file) => {
+        fileInfos.push({
+          name: file,
+          // url: baseUrl + "/" + language + "/" + file + "_" + language + ".pdf",
+          url: baseUrl + file,
+        });
       });
-    });
+    }
+    catch(err){
+      console.log(err);
+      res.status(500).send({
+        message: "Error al escanear en busca de archivos",
+      });
+    }
+
 
     res.status(200).send(fileInfos);
   });
 };
 
 const download = (req, res) => {
+  const language = req.params.lang;
   const fileName = req.params.name;
-  const directoryPath = __basedir + "/resources/patogenos/pdf/";
+  const directoryPath = __basedir + "/resources/patogenos/pdf/" + language + "/";
 
   res.download(directoryPath + fileName, fileName, (err) => {
     if (err) {
