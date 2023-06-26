@@ -13,6 +13,7 @@ const Informe = function(informe) {
   this.observaciones = informe.observaciones;
   this.contacto = informe.contacto;
   this.isPublic = informe.isPublic;
+  this.userId = informe.userId;
 };
 
 Informe.create = (newInforme, result) => {
@@ -38,6 +39,43 @@ Informe.getAll = result => {
     console.log("informes: ", res);
     result(null, res);
   });
+};
+
+Informe.getAllByUser = (userId, result) => {
+  console.log('userId: ', userId);
+  sql.query(
+    "SELECT tipoUser FROM users WHERE id = ?",
+    userId,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+      
+      if(res[0].tipoUser == 'admin') {
+        sql.query("SELECT * FROM informes", (err, res) => {
+          if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+          }
+          
+          result(null, res);
+        });
+      } else {
+        sql.query("SELECT * FROM informes WHERE userId = ?", userId, (err, res) => {
+          if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+          }
+          
+          result(null, res);
+        });
+      }
+    }
+  );
 };
 
 module.exports = Informe;

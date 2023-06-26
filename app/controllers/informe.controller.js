@@ -23,7 +23,8 @@ exports.create = (req, res) => {
     severidad: req.body.severidad,
     observaciones: req.body.observaciones,
     contacto: req.body.contacto,
-    isPublic: req.body.isPublic
+    isPublic: req.body.isPublic,
+    userId: req.body.userId
   });
 
   // Save Tutorial in the database
@@ -48,3 +49,14 @@ exports.findAll = (req, res) => {
     else res.send(data);
   });
 };
+
+exports.findAllByUser = (req, res) => {
+  Informe.getAllByUser(req.params.id, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving informes."
+      });
+    else res.send(data);
+  });
+}
