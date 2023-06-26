@@ -9,6 +9,8 @@ exports.create = (req, res) => {
     });
   }
 
+  console.log('req.body: ', req.body);
+
   // Crea un informe
   const informe = new Informe({
     patogeno: req.body.patogeno,
@@ -20,7 +22,8 @@ exports.create = (req, res) => {
     extension_pies: req.body.extension_pies,
     severidad: req.body.severidad,
     observaciones: req.body.observaciones,
-    contacto: req.body.contacto
+    contacto: req.body.contacto,
+    isPublic: req.body.isPublic
   });
 
   // Save Tutorial in the database

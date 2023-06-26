@@ -12,6 +12,7 @@ const Informe = function(informe) {
   this.severidad = informe.severidad;
   this.observaciones = informe.observaciones;
   this.contacto = informe.contacto;
+  this.isPublic = informe.isPublic;
 };
 
 Informe.create = (newInforme, result) => {
@@ -27,7 +28,7 @@ Informe.create = (newInforme, result) => {
 };
 
 Informe.getAll = result => {
-  sql.query("SELECT * FROM informes", (err, res) => {
+  sql.query("SELECT * FROM informes WHERE isPublic = 1", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
