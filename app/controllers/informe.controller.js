@@ -60,3 +60,17 @@ exports.findAllByUser = (req, res) => {
     else res.send(data);
   });
 }
+
+exports.download = (req, res) => {
+  console.log('req.params.id download: ', req.params.id);
+  Informe.getAllByUser(req.params.id, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving informes."
+      });
+    else {
+      Informe.convertToCSV(data, res);
+    }
+  });   
+}

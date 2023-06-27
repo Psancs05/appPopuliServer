@@ -1,4 +1,5 @@
 const sql = require("./db.js");
+const { Parser } = require('json2csv');
 
 // constructor
 const Informe = function(informe) {
@@ -77,5 +78,19 @@ Informe.getAllByUser = (userId, result) => {
     }
   );
 };
+
+
+Informe.convertToCSV = (data, res) => {
+  const fields = ['id', 'patogeno', 'fecha', 'localizacion', 'lat', 'lng', 'extension_arboles', 'extension_pies', 'severidad', 'observaciones', 'contacto', 'userId', 'isPublic'];
+  const json2csvParser = new Parser({ fields });
+  
+  const csv = json2csvParser.parse(data);
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename=informer.csv');
+  res.status(200).send(csv);
+};
+
+
 
 module.exports = Informe;
