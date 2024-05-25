@@ -9,6 +9,8 @@ exports.create = (req, res) => {
     });
   }
 
+  console.log('req.body: ', req.body);
+
   // Crea un informe
   const informe = new Informe({
     patogeno: req.body.patogeno,
@@ -20,7 +22,9 @@ exports.create = (req, res) => {
     extension_pies: req.body.extension_pies,
     severidad: req.body.severidad,
     observaciones: req.body.observaciones,
-    contacto: req.body.contacto
+    contacto: req.body.contacto,
+    isPublic: req.body.isPublic,
+    userId: req.body.userId
   });
 
   // Save Tutorial in the database
@@ -45,3 +49,28 @@ exports.findAll = (req, res) => {
     else res.send(data);
   });
 };
+
+exports.findAllByUser = (req, res) => {
+  Informe.getAllByUser(req.params.id, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving informes."
+      });
+    else res.send(data);
+  });
+}
+
+exports.download = (req, res) => {
+  console.log('req.params.id download: ', req.params.id);
+  Informe.getAllByUser(req.params.id, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving informes."
+      });
+    else {
+      Informe.convertToCSV(data, res);
+    }
+  });   
+}

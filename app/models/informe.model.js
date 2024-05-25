@@ -1,4 +1,5 @@
 const sql = require("./db.js");
+const { Parser } = require('json2csv');
 
 // constructor
 const Informe = function(informe) {
@@ -12,6 +13,8 @@ const Informe = function(informe) {
   this.severidad = informe.severidad;
   this.observaciones = informe.observaciones;
   this.contacto = informe.contacto;
+  this.isPublic = informe.isPublic;
+  this.userId = informe.userId;
 };
 
 Informe.create = (newInforme, result) => {
@@ -27,7 +30,7 @@ Informe.create = (newInforme, result) => {
 };
 
 Informe.getAll = result => {
-  sql.query("SELECT * FROM informes", (err, res) => {
+  sql.query("SELECT * FROM informes WHERE isPublic = 1", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
@@ -38,5 +41,56 @@ Informe.getAll = result => {
     result(null, res);
   });
 };
+
+Informe.getAllByUser = (userId, result) => {
+  console.log('userId: ', userId);
+  sql.query(
+    "SELECT tipoUser FROM users WHERE id = ?",
+    userId,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+      
+      if(res[0].tipoUser == 'admin') {
+        sql.query("SELECT * FROM informes", (err, res) => {
+          if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+          }
+          
+          result(null, res);
+        });
+      } else {
+        sql.query("SELECT * FROM informes WHERE userId = ?", userId, (err, res) => {
+          if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+          }
+          
+          result(null, res);
+        });
+      }
+    }
+  );
+};
+
+
+Informe.convertToCSV = (data, res) => {
+  const fields = ['id', 'patogeno', 'fecha', 'localizacion', 'lat', 'lng', 'extension_arboles', 'extension_pies', 'severidad', 'observaciones', 'contacto', 'userId', 'isPublic'];
+  const json2csvParser = new Parser({ fields });
+  
+  const csv = json2csvParser.parse(data);
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename=informer.csv');
+  res.status(200).send(csv);
+};
+
+
 
 module.exports = Informe;
